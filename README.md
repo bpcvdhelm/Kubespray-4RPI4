@@ -1,4 +1,5 @@
 # Kubespray-4RPI4
+![alt text](https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Rpi4Cluster.jpeg?raw=true)
 ## Summary
 When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's. Within that Kubernetes cluster a 3 node Elasticsearch cluster plus one Kibana will be deployed. All Raspberry Pi's will contain Filebeat and Metricbeat reporting to the Elasticsearch cluster within Kubernetes.
 The Kubernetes dashboard will be accessable via port 30001 on each Raspberry Pi. Elasticsearch will be reachable on port 30002 and Kibana on 30003. So you don't have to fidde with kubectl proxy or port-forward.

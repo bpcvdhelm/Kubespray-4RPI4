@@ -15,5 +15,10 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
 ## The tasks
 - At first you need to prepare the SD cards for the Pi's. Google for instructrions to install Ubuntu LTS on the raspberry PI's. 
 - Then login to each ubuntu and configure the wlan0 wifi adapter with netplan. You can goolge howto do that or you can have a peek at the 01-prepare.yml file on howto do that.
-- Execute sh 01-prepare.sh
-  - This will 
+- sh 01-prepare.sh
+  - This will apply maintenance, disable unattended upgrades and enable cgroups memory.
+- sh 02-install.sh
+  - This will prepare node1 and install kubespray, followed up by an install running on node1. This will take 30-45 minutes. Be patient!
+- sh 03-kubernetes-dashboard
+  - Install the kubernetes dashboard. I use the official instead of the Kubespray one. Somehow the official worked better for me. Fetch the displayed token at the end of the install. You need it for accessing the dashboard.
+- Check the Kubernetes dashboard on https://<IP of any Rpi>:30001. When Chrome complains on the certificates just type thisisunsafe. Fill in the token and it should work.

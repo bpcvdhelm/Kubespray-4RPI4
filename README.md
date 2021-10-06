@@ -17,6 +17,7 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
 - At first you need to prepare the SD cards for the Pi's. Google for instructrions to install Ubuntu LTS on the raspberry PI's. 
 - Then login to each ubuntu with the user ubuntu and password ubuntu. Change the ubuntu password and configure the wlan0 wifi adapter with netplan. You can google howto do that or you can have a peek at the 01-prepare.yml file.
 - Write down the IP addresses of all Raspberry Pi's. Use the command ip a.
+- Let Ubuntu do the unattended upgrades. This takes 15-20 minutes.
 - Alter the hosts.ini and fill in the wifi IPs of the nodes.
 - On your desktop/laptop generate ssh keys with ssh-keygen, when not already done!
 - Setup the ssh keys to all Raspberry Pi's with ssh-copy-id ubuntu@(Wifi IP1) up to ssh-copy-id ubuntu@(Wifi IP4).

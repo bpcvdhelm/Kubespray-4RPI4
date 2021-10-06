@@ -56,5 +56,5 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
 Execute the commands:
 - mkdir -p ~/.kube
 - scp ubuntu@node1.local:/home/ubuntu/.kube/config ~/.kube/config
-- edit the ~/.kube/config file and change 127.0.0.1 to the IP address of node1 or just state node1.local.
+- edit the ~/.kube/config file and change 127.0.0.1 to the IP address.
 - test with the command kubectl get nodes -owide

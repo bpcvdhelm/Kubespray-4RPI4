@@ -42,7 +42,6 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
 - sh 05-elasticsearch.sh
   - This will install a 3 node Elasticsearch cluster. 
   - At the end there will be a file /home/ubuntu/kubespray/_elastic.pwd file on each Raspberry Pi containing the password for the elastic user. Fetch it, you need this for accessing Elasticsearch via Kibana.
-  - Look at the kubernetes-dashboard and again wait until everything is green. This takes around 5-10 minutes.
 - sh 06-kibana.sh
   - Install a Kibana instance.
 - Check Kubernetes dashboard if Elasticsearch and Kibana are up and running. After that access Kibana on https://node1.local:30003. Again when google chrome complains, just type thisisunsafe.

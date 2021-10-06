@@ -19,7 +19,7 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
   - This will apply maintenance, disable unattended upgrades and enable cgroups memory.
 - sh 02-install.sh
   - This will prepare node1 and install kubespray, followed up by an install running on node1. This will take 30-45 minutes. Be patient!
-- sh 03-kubernetes-dashboard
+- sh 03-kubernetes-dashboard.sh
   - Install the kubernetes dashboard. I use the official instead of the Kubespray one. Somehow the official worked better for me. Fetch the displayed token at the end of the install. You need it for accessing the dashboard.
 - Check the Kubernetes dashboard on https://(IP of any Rpi):30001. When Chrome complains on the certificates just type thisisunsafe. 
 - sh 04-elastic.sh

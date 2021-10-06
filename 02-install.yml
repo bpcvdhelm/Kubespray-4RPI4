@@ -1,0 +1,106 @@
+---
+#
+# Note that the ansible install playbook will run on node1
+# So please setup the ssh keys from node1 to node1, 2, 3 and 4
+#
+
+#
+# clone kubespray on node1
+#
+- hosts: node1
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: clone kubespray
+    become_user: ubuntu
+    ansible.builtin.git:
+      repo: https://github.com/kubernetes-sigs/kubespray.git
+      version: release-2.16
+      dest: /home/ubuntu/kubespray
+# 
+# create logs directory
+#
+  - name: create logs
+    file:
+      path: /home/ubuntu/kubespray/logs
+      state: directory
+      owner: ubuntu
+      group: ubuntu
+#
+# install pip
+#
+  - name: install pip
+    apt:
+      pkg: pip
+#
+# perform kubespray instructions
+#
+  - name: create mycluster
+    become_user: ubuntu
+    ansible.builtin.shell: cp -rfp inventory/sample inventory/mycluster
+    args:
+      chdir: /home/ubuntu/kubespray
+
+  - name: install requirements
+    ansible.builtin.pip:
+      requirements: /home/ubuntu/kubespray/requirements.txt
+    
+  - name: create build command
+    become_user: ubuntu
+    ansible.builtin.copy:
+      content: |
+        declare -a IPS=(10.0.0.11 10.0.0.12 10.0.0.13 10.0.0.14)
+        CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+      dest: /home/ubuntu/kubespray/_configure.sh
+
+  - name: build
+    become_user: ubuntu
+    ansible.builtin.shell: /usr/bin/bash _configure.sh
+    args:
+      chdir: /home/ubuntu/kubespray
+
+  - name: enable helm_enabled
+    become_user: ubuntu
+    lineinfile:
+      path: /home/ubuntu/kubespray/inventory/mycluster/group_vars/k8s_cluster/addons.yml
+      regexp: "helm_enabled: false"
+      line: "helm_enabled: true"
+      state: present
+
+  - name: enable local_path_provisioner_enabled
+    become_user: ubuntu
+    lineinfile:
+      path: /home/ubuntu/kubespray/inventory/mycluster/group_vars/k8s_cluster/addons.yml
+      regexp: "local_path_provisioner_enabled: false"
+      line: "local_path_provisioner_enabled: true"
+      state: present
+
+  - name: enable ingress_nginx_enabled
+    become_user: ubuntu
+    lineinfile:
+      path: /home/ubuntu/kubespray/inventory/mycluster/group_vars/k8s_cluster/addons.yml
+      regexp: "ingress_nginx_enabled: false"
+      line: "ingress_nginx_enabled: true"
+      state: present
+
+  - name: install cluster (be patient, this takes 30-45 minutes)
+    become_user: ubuntu
+    ansible.builtin.shell: ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml -u ubuntu
+    args:
+      chdir: /home/ubuntu/kubespray
+#
+# generate config for kubectl cmd
+#
+  - name: mkdir .kube
+    become_user: ubuntu
+    ansible.builtin.shell: mkdir .kube
+    args:
+      chdir: /home/ubuntu
+
+  - name: copy /etc/kubernetes/admin.conf to /home/ubuntu/.kube/config
+    copy:
+      remote_src: yes
+      src: /etc/kubernetes/admin.conf
+      dest: /home/ubuntu/.kube/config
+      owner: ubuntu
+      group: ubuntu

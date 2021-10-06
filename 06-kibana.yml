@@ -1,0 +1,65 @@
+---
+
+- hosts: node1
+  become: yes
+  gather_facts: no
+  tasks:
+#
+# Deploy kibana
+#
+  - name: Create _kibana.yml
+    become_user: ubuntu
+    ansible.builtin.copy:
+      content: |
+        apiVersion: kibana.k8s.elastic.co/v1
+        kind: Kibana
+        metadata:
+          name: quickstart
+        spec:
+          version: 7.15.0
+          count: 1
+          elasticsearchRef:
+            name: quickstart
+      dest: /home/ubuntu/kubespray/_kibana.yml
+
+  - name: Deploy kibana
+    become_user: ubuntu
+    ansible.builtin.shell: kubectl apply -f kubespray/_kibana.yml
+#
+# Create NodePort quickstart-kb-http svc
+#
+  - name: Create nodeport-quickstart-kb-http svc 
+    become_user: ubuntu
+    ansible.builtin.copy:
+      content: |
+        apiVersion: v1
+        kind: Service
+        metadata:
+          labels:
+            common.k8s.elastic.co/type: kibana
+            kibana.k8s.elastic.co/name: quickstart
+          name: nodeport-quickstart-kb-http
+          namespace: default
+        spec:
+          externalTrafficPolicy: Cluster
+          ports:
+          - name: https
+            port: 5601
+            protocol: TCP
+            targetPort: 5601
+            nodePort: 30003
+          selector:
+            common.k8s.elastic.co/type: kibana
+            kibana.k8s.elastic.co/name: quickstart
+          sessionAffinity: None
+          type: NodePort
+        status:
+          loadBalancer: {}
+      dest: /home/ubuntu/kubespray/nodeport-quickstart-kb-http.yml
+    register: svc
+#
+# Activate nodeport-quickstart-kb-http dashboard svc
+#
+  - name: Activate nodeport-quickstart-kb-http dashboard svc
+    command: kubectl apply -f /home/ubuntu/kubespray/nodeport-quickstart-kb-http.yml
+    when: svc.changed

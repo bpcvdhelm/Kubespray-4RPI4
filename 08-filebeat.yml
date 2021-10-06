@@ -1,0 +1,90 @@
+---
+
+- hosts: cluster
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: download and install the public signing key
+    ansible.builtin.shell: wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
+
+  - name: install apt-transport-https
+    apt:
+      pkg: apt-transport-https
+
+  - name: save the repository definition to /etc/apt/sources.list.d/elastic-7.x.list
+    ansible.builtin.shell: echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list
+
+  - name: apt-get update
+    apt:
+      update_cache: yes
+
+  - name: install filebeat
+    apt:
+      pkg: filebeat
+
+  - name: enable filebeat module system
+    ansible.builtin.shell: filebeat modules enable system
+
+- hosts: node1
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: retrieve the elastic password
+    command: cat /home/ubuntu/kubespray/_elastic.pwd
+    register: password
+
+  - name: load index template
+    ansible.builtin.shell: filebeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["https://10.0.0.11:30002"]' -E 'output.elasticsearch.ssl.verification_mode="none"' -E 'output.elasticsearch.username="elastic"' -E 'output.elasticsearch.password="{{ password.stdout }}"'
+
+  - name: setup dashboards
+    ansible.builtin.shell: filebeat setup --dashboards -E output.logstash.enabled=false -E 'setup.kibana.host="https://10.0.0.11:30003"' -E 'setup.kibana.user="elastic"' -E 'setup.kibana.ssl.verification_mode="none"' -E 'setup.kibana.username="elastic"' -E 'setup.kibana.password="{{ password.stdout }}"'
+
+- hosts: cluster
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: stat /etc/filebeat/filebeat.yml.org
+    stat:
+      path: /etc/filebeat/filebeat.yml.org
+    register: stat
+
+  - name: save the original filebeat.yml
+    ansible.builtin.shell: mv /etc/filebeat/filebeat.yml /etc/filebeat/filebeat.yml.org
+    when: not stat.stat.exists
+
+  - name: retrieve the elastic password
+    command: cat /home/ubuntu/kubespray/_elastic.pwd
+    register: password
+
+  - name: create filebeat.yml
+    ansible.builtin.copy:
+      content: |
+        filebeat.config.modules:
+          path: ${path.config}/modules.d/*.yml
+          reload.enabled: false
+        setup.template.settings:
+        index.number_of_shards: 1
+        index.codec: best_compression
+        output.elasticsearch:
+          hosts: ["10.0.0.11:30002","10.0.0.12:30002", "10.0.0.13:30002", "10.0.0.14:30002"]
+          ssl.verification_mode: "none"
+          protocol: "https"
+          username: "elastic"
+          password: "{{ password.stdout }}"
+        processors:
+          - add_host_metadata: 
+              when.not.contains.tags: forwarded
+          - add_cloud_metadata: ~
+          - add_docker_metadata: ~
+          - add_kubernetes_metadata: ~
+      dest: /etc/filebeat/filebeat.yml
+
+  - name: enable filebeat
+    ansible.builtin.service:
+      name: filebeat
+      enabled: yes
+
+  - name: start filebeat
+    ansible.builtin.service:
+      name: filebeat.service
+      state: restarted

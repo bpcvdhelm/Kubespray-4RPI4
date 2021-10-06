@@ -1,0 +1,9 @@
+---
+
+- hosts: cluster
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: Shutdown
+    community.general.shutdown:
+      delay: 5

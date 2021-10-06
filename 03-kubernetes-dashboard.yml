@@ -1,0 +1,93 @@
+---
+#
+# Tip: Save the token displayed at the end of the install
+#
+- hosts: node1
+  become: yes
+  gather_facts: no
+  tasks:
+# 
+# Deploy the kubernetes dashboard
+#
+  - name: Deploy the kubernetes dashboard
+    become_user: ubuntu
+    ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.3.1/aio/deploy/recommended.yaml
+    args:
+      chdir: /home/ubuntu
+#
+# Create nodeport-kubernetes-dashboard svc
+#
+  - name: Create nodeport-kubernetes-dashboard svc 
+    become_user: ubuntu
+    ansible.builtin.copy:
+      content: |
+        apiVersion: v1
+        kind: Service
+        metadata:
+          labels:
+            k8s-app: kubernetes-dashboard
+          name: nodeport-kubernetes-dashboard
+          namespace: kubernetes-dashboard
+        spec:
+          externalTrafficPolicy: Cluster
+          ports:
+          - port: 443
+            protocol: TCP
+            targetPort: 8443
+            nodePort: 30001
+          selector:
+            k8s-app: kubernetes-dashboard
+          sessionAffinity: None
+          type: NodePort
+        status:
+          loadBalancer: {}
+      dest: /home/ubuntu/kubespray/nodeport-kubernetes-dashboard.yml
+    register: svc
+#
+# Activate nodeport-kubernetes-dashboard svc
+#
+  - name: Activate nodeport kubernetes dashboard svc
+    become_user: ubuntu
+    ansible.builtin.shell: kubectl apply -f /home/ubuntu/kubespray/nodeport-kubernetes-dashboard.yml
+    args:
+      chdir: /home/ubuntu
+    when: svc.changed
+# 
+# Create the service account and bind to cluster-admin role
+#
+  - name: Create service account
+    become_user: ubuntu
+    ansible.builtin.shell: kubectl create serviceaccount dashboard-admin-sa
+    args:
+      chdir: /home/ubuntu
+    ignore_errors: true
+
+  - name: Bind to cluster admin role
+    become_user: ubuntu
+    ansible.builtin.shell: kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
+    args:
+      chdir: /home/ubuntu
+    ignore_errors: true
+# 
+# Get the token
+#
+  - name: Get secrets and fetch name of admin
+    become_user: ubuntu
+    ansible.builtin.shell: kubectl get secrets | grep dashboard-admin-sa-token | cut -d " " -f1
+    args:
+      chdir: /home/ubuntu
+    register: output
+
+  - set_fact:
+      secret_name: "{{ output.stdout_lines[0] }}"
+
+  - name: Describe secret {{ secret_name }}
+    become_user: ubuntu
+    ansible.builtin.shell: kubectl describe secret {{ secret_name }}
+    args:
+      chdir: /home/ubuntu
+    register: output
+
+  - name: Use this token to login kubernetes-dashboard
+    debug:
+      var: output.stdout_lines

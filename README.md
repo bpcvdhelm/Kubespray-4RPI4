@@ -14,7 +14,7 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
 
 ## The tasks
 - At first you need to prepare the SD cards for the Pi's. Google for instructrions to install Ubuntu LTS on the raspberry PI's. 
-- Then login to each ubuntu and configure the wlan0 wifi adapter with netplan. You can goolge howto do that or you can have a peek at the 01-prepare.yml file on howto do that.
+- Then login to each ubuntu and configure the wlan0 wifi adapter with netplan. You can google howto do that or you can have a peek at the 01-prepare.yml file.
 - sh 01-prepare.sh
   - This will apply maintenance, disable unattended upgrades and enable cgroups memory.
 - sh 02-install.sh

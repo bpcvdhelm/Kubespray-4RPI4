@@ -59,5 +59,5 @@ Execute the commands:
 - test with the command kubectl get nodes -owide
 
 ## Todo
-- Implement Kubernetes metricset, I cannot find a arm64 version. Maybe someone has a tip.
+- Implement Kubernetes metricset, I cannot find an arm64 version. Maybe someone has a tip.
 - Implement ssh key gen and copy wihtin ansible

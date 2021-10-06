@@ -32,7 +32,7 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
   - You can login to node1, go to the kubespray directory and tail -f the log named _install-YYMMDD-HH:MM.log that's there being created,
 - sh 03-kubernetes-dashboard.sh
   - Install the kubernetes dashboard. I use the official instead of the Kubespray one. Somehow the official worked better for me. Fetch the displayed token at the end of the install. You need it for accessing the dashboard.
-- Check the Kubernetes dashboard on https://node1.local:30001. When Chrome complains on the certificates just type thisisunsafe. 
+- Check the Kubernetes dashboard on https://node1.local:30001. When Chrome complains on the certificates just type thisisunsafe. Use the token to login.
   - Select all namespaces to see some action.
 - sh 04-elastic.sh
   - This will install the elastic operator responsible for implementing Elasticsearch clusters and Kibana's.
@@ -40,7 +40,7 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
   - This will install a 3 node Elasticsearch cluster. At the end there will be a file /home/ubuntu/kubespray/_elastic.pwd file on each Raspberry Pi containing the password for the elastic user. Fetch it, you need this for accessing Elasticsearch via Kibana.
 - sh 06-kibana.sh
   - Install a Kibana instance.
-- Check Kubernetes dashboard if Elasticsearch and Kibana are up and running. After that access Kibana on https://(IP of any Rpi):30003.
+- Check Kubernetes dashboard if Elasticsearch and Kibana are up and running. After that access Kibana on https://node1.local:30003. Again when google chrome complains, just type thisisunsafe.
 - sh 07-metricbeat.sh
   - Install and configure Metricbeat on each Raspberry Pi including loading the index templates and dashboards.
 - sh 08-filebeat.sh

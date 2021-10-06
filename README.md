@@ -43,3 +43,10 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
 - sh 08-filebeat.sh
   - Install and configure Filebeat on each Raspbery Pi including loading the index template and dasboards.
 - Check the incoming data and dashboards within Kibana.
+
+## Enable kubectl command for your desktop/laptop
+Execute the commands:
+- mkdir -p ~/.kube
+- scp ubuntu@(IP of node1):/home/ubuntu/.kube/config ~/.kube/config
+- edit the ~/.kube/config file and change 127.0.0.1 to the IP address of node1
+- test with the command kubectl get nodes -owide

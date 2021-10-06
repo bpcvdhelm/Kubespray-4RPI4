@@ -18,7 +18,7 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
 - Write down the IP addresses of all Raspberry Pi's. Use the command ip a.
 - Alter the hosts.ini and fill in the wifi IPs of the nodes.
 - On your desktop/laptop generate ssh keys with ssh-keygen, when not already done!
-- Setup the ssh keys to all Raspberry Pi's with ssh-copy-id ubuntu@<Wifi IP1> up to ssh-copy-id ubuntu@<Wifi IP4>.
+- Setup the ssh keys to all Raspberry Pi's with ssh-copy-id ubuntu@(Wifi IP1) up to ssh-copy-id ubuntu@(Wifi IP4).
 - sh 01-prepare.sh
   - This will apply maintenance, disable unattended upgrades and enable cgroups memory.
 - Login into the first Raspberry Pi node1 and do here the ssh-keygen

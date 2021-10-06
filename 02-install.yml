@@ -76,7 +76,7 @@
 
   - name: install cluster (be patient, this takes 30-45 minutes)
     become_user: ubuntu
-    ansible.builtin.shell: ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml -u ubuntu | tee _install-$(date +"%Y%m%d-%H:%M").log
+    ansible.builtin.shell: ansible-playbook -i inventory/mycluster/hosts.yaml  --become --become-user=root cluster.yml -u ubuntu | tee /home/ubuntu/kubespray/_install-$(date +"%Y%m%d-%H:%M").log
     args:
       chdir: /home/ubuntu/kubespray
 #

@@ -15,8 +15,12 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
 ## The tasks and scripts
 - At first you need to prepare the SD cards for the Pi's. Google for instructrions to install Ubuntu LTS on the raspberry PI's. 
 - Then login to each ubuntu with the user ubuntu and password ubuntu. Change the ubuntu password and configure the wlan0 wifi adapter with netplan. You can google howto do that or you can have a peek at the 01-prepare.yml file.
+- On your desktop/laptop generate ssh keys with ssh-keygen, when not already done!
+- Setup the ssh keys to all Raspberry Pi's with ssh-copy-id ubuntu@<IP Raspberry Pi>.
 - sh 01-prepare.sh
   - This will apply maintenance, disable unattended upgrades and enable cgroups memory.
+- Login into the first Raspberry Pi node1 and do here the ssh-keygen
+- After the keygen setup the ssh to all (also node 1) Raspberry Pi's with ssh-copy-id 10.0.0.11 up to ssh-copy-id 10.0.0.14.
 - sh 02-install.sh
   - This will prepare node1 and install kubespray, followed up by an install running on node1. This will take 30-45 minutes. Be patient!
 - sh 03-kubernetes-dashboard.sh

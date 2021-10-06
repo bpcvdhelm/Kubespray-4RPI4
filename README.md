@@ -38,6 +38,7 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
   - Select all namespaces to see some action.
 - sh 04-elastic.sh
   - This will install the elastic operator responsible for implementing Elasticsearch clusters and Kibana's.
+  - Look on the kubernetes-dashboard and wait until everything is green again.
 - sh 05-elasticsearch.sh
   - This will install a 3 node Elasticsearch cluster. At the end there will be a file /home/ubuntu/kubespray/_elastic.pwd file on each Raspberry Pi containing the password for the elastic user. Fetch it, you need this for accessing Elasticsearch via Kibana.
 - sh 06-kibana.sh

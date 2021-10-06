@@ -57,3 +57,6 @@ Execute the commands:
 - scp ubuntu@node1.local:/home/ubuntu/.kube/config ~/.kube/config
 - edit the ~/.kube/config file and change 127.0.0.1 to the Wifi IP address of node1.
 - test with the command kubectl get nodes -owide
+
+## Todo
+- Implement Kubernetes metricset, I cannot find a arm64 version. Maybe someone has a tip.

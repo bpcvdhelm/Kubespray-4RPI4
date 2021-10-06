@@ -60,3 +60,4 @@ Execute the commands:
 
 ## Todo
 - Implement Kubernetes metricset, I cannot find a arm64 version. Maybe someone has a tip.
+- Implement ssh key gen and copy wihtin ansible

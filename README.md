@@ -11,3 +11,7 @@ The cluster is reachable via the wlan0 Wifi connector and the Kubernetes cluster
 
 ## Build
 The build is run with ansible from your desktop/laptop. The ansible install job running on your desktop/laptop will prepare node1 as the Kubernetes installing node. After that it will run a Kubespray ansible install job on node1. There are ansible scripts for implementing Kubernetes-dashboard, the Elasticsearch cluster and Kibana. Finaly ansible scripts are available for implementing Filebeat and Metricbeat on each Raspberry Pi.
+
+## The tasks
+- At first you need to prepare the SD cards for the Pi's. Google for instructrions to install Ubuntu LTS on the raspberry PI's. 
+- Then login to each ubuntu and configure the wlan0 wifi adapter with netplan. You can goolge howto do that or you can have a peek at the 01-prepare.yml file on howto do that.

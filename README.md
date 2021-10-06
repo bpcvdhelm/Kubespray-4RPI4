@@ -25,6 +25,7 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
 - After the keygen setup the ssh to all (also node 1) Raspberry Pi's with ssh-copy-id 10.0.0.11 up to ssh-copy-id 10.0.0.14.
 - sh 02-install.sh
   - This will prepare node1 and install kubespray, followed up by an install running on node1. This will take 30-45 minutes. Be patient!
+  - You can login to node1, go to the kubespray directory and tail -f the log named _install-YYMMDD-HH:MM.log that's there being created,
 - sh 03-kubernetes-dashboard.sh
   - Install the kubernetes dashboard. I use the official instead of the Kubespray one. Somehow the official worked better for me. Fetch the displayed token at the end of the install. You need it for accessing the dashboard.
 - Check the Kubernetes dashboard on https://(IP of any Rpi):30001. When Chrome complains on the certificates just type thisisunsafe. 

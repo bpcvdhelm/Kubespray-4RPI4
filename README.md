@@ -13,7 +13,7 @@ I've purchased 4 Raspberry Pi4 machines with 8Gb memory plus a TP-LINK LS1005G i
 My cluster is reachable via the wlan0 Wifi connector and the Kubernetes cluster is communicating with each other via the eth0 connector. I've chosen the IP addresses 10.0.0.11 to 10.0.0.14 for the Raspberry Pi eth0 addresses.
 
 ## Build
-The build is run with ansible from your desktop/laptop, so ansible needs to be installed. The scripts will first prepare the Raspberry Pi's and then install the Kubernetes cluster. This install will be run from node1, so you won't have to install all kinds of requirements on your laptop. When the cluster is up and running you will install Kubernetes-dashboard, Elastic operator, the 3 node Elasticsearch cluster, one Kibana instance and finally file- and metricbeat on all Raspberry Pi's reporting to the Elasticsearch cluster within Kubernetes.
+The build is run with ansible from your desktop/laptop, so ansible needs to be installed. The scripts will first prepare the Raspberry Pi's and then install the Kubernetes cluster. This install will be run from node1, so you won't have to install all kinds of requirements on your laptop. When the cluster is up and running you will install Kubernetes-dashboard, Elastic operator, the 3 node Elasticsearch cluster, one Kibana instance within Kubernetes. Finally file- and metricbeat will be installed on all Raspberry Pi's reporting to the Elasticsearch cluster within Kubernetes.
 
 ## The tasks and scripts
 - First you need to prepare the SD cards for the Pi's. Google for instructrions howto install Ubuntu LTS on the raspberry PI's. 

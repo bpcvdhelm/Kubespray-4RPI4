@@ -1,7 +1,7 @@
 # Kubespray-4RPI4
 
 ## Summary
-When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's. Within that Kubernetes cluster a 3 node Elasticsearch cluster plus one Kibana will be deployed. All Raspberry Pi's will contain Filebeat and Metricbeat reporting to the Elasticsearch cluster within Kubernetes.
+When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's. Within that Kubernetes cluster a 3 node Elasticsearch cluster plus one Kibana and will be deployed. All Raspberry Pi's will contain Filebeat and Metricbeat reporting to the Elasticsearch cluster within Kubernetes. On top there will be a metricbeat running in the cluster reporting all cluster performances.
 The Kubernetes dashboard will be accessable via port 30001 on each Raspberry Pi. Elasticsearch will be reachable on port 30002 and Kibana on 30003. So you don't have to fiddle with kubectl proxy or port-forward.
 
 ## Hardware
@@ -53,6 +53,10 @@ The build is run with ansible from your desktop/laptop, so ansible needs to be i
 - sh 09-metrics-server.sh
   - Install the metrics-server. See the 09-metrics-server.yml what needs to be changed on the original for Raspberry Pi's.
 - Check the incoming data for file- and metricbeat and check the nice metricbeat dashboards within Kibana.
+- sh 10-kube-state-metrics.sh
+  - Install the kube-state-metrics that will provide statistics to kubernetes metricbeat.
+- sh 11-kubernetes-metricbeat.sh
+  - The metricbeat kubernetes daemon set.
 
 <img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Metricbeat.png" width="1000">
 

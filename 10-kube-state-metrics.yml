@@ -1,0 +1,17 @@
+---
+
+#
+# clone kube-state-metrics on node1
+#
+- hosts: node1
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: clone kube-state-metrics
+    become_user: ubuntu
+    ansible.builtin.git:
+      repo: https://github.com/kubernetes/kube-state-metrics.git
+      dest: /home/ubuntu/kube-state-metrics
+  
+  - name: install kube-state-metrics
+    command: kubectl apply -f /home/ubuntu/kube-state-metrics/examples/standard/

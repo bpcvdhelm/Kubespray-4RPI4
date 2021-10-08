@@ -1,0 +1,1 @@
+ansible-playbook 11-kubernetes-metricbeat.yml -i hosts.ini -u ubuntu

@@ -62,4 +62,4 @@ Execute the commands:
 - Implement Kubernetes metricset, I cannot find an arm64 version. Maybe someone has a tip.
 - Implement ssh key gen and copy wihtin ansible
 
-<img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Metricbeat.png" width="900">
+<img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Metricbeat.png" width="1000">

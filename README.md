@@ -7,6 +7,8 @@ The Kubernetes dashboard will be accessable via port 30001 on each Raspberry Pi.
 ## Hardware
 I've purchased 4 Raspberry Pi4 machines with 8Gb memory plus a TP-LINK LS1005G including cables. When I look at the Metricbeat dashboards, also the 4Gb memory Raspberry Pi's will work. The Raspberry Pi's are built together with acryl plates. Power is coming from "old" Rapsberry Pi3 power supplies, so I also purchased USB Micro-B to USB-C adapters.
 
+<img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/RpiCluster.jpeg" width="400">
+
 ## Architecture
 The cluster is reachable via the wlan0 Wifi connector and the Kubernetes cluster is communicating with each other via eth0 connector. I've chosen the IP addresses 10.0.0.11 to 10.0.0.14 for the Raspberry Pi eth0 addresses.
 
@@ -51,6 +53,8 @@ The build is run with ansible from your desktop/laptop. The ansible install job 
   - Install and configure Filebeat on each Raspbery Pi including loading the index template and dasboards.
 - Check the incoming data and dashboards within Kibana.
 
+<img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Metricbeat.png" width="1000">
+
 ## Enable kubectl command for your desktop/laptop
 Execute the commands:
 - mkdir -p ~/.kube
@@ -61,5 +65,3 @@ Execute the commands:
 ## Todo
 - Implement Kubernetes metricset, I cannot find an arm64 version. Maybe someone has a tip.
 - Implement ssh key gen and copy wihtin ansible
-
-<img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Metricbeat.png" width="1000">

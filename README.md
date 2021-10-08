@@ -50,6 +50,8 @@ The build is run with ansible from your desktop/laptop, so ansible needs to be i
   - Install and configure Metricbeat on each Raspberry Pi including loading the index templates and dashboards.
 - sh 08-filebeat.sh
   - Install and configure Filebeat on each Raspbery Pi including loading the index template and dasboards.
+- sh 09-metrics-server.sh
+  - Install the metrics-server. See the 09-metrics-server.yml what needs to be changed on the original for Raspberry Pi's.
 - Check the incoming data for file- and metricbeat and check the nice metricbeat dashboards within Kibana.
 
 <img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Metricbeat.png" width="1000">
@@ -62,5 +64,4 @@ Execute the commands:
 - test with the command kubectl get nodes -owide
 
 ## Todo
-- Implement Kubernetes metricset, I cannot find an arm64 version. Maybe someone has a tip.
 - Implement ssh key gen and copy wihtin ansible

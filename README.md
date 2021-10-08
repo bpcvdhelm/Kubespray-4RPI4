@@ -1,5 +1,4 @@
 # Kubespray-4RPI4
-<img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Rpi4Cluster.jpeg" width="250"> <img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Metricbeat.png" width="700">
 
 ## Summary
 When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's. Within that Kubernetes cluster a 3 node Elasticsearch cluster plus one Kibana will be deployed. All Raspberry Pi's will contain Filebeat and Metricbeat reporting to the Elasticsearch cluster within Kubernetes.
@@ -62,3 +61,5 @@ Execute the commands:
 ## Todo
 - Implement Kubernetes metricset, I cannot find an arm64 version. Maybe someone has a tip.
 - Implement ssh key gen and copy wihtin ansible
+
+<img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Metricbeat.png" width="700">

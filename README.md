@@ -69,4 +69,3 @@ Execute the commands:
 
 ## Todo
 - Implement ssh key gen and copy wihtin ansible
-- Kubernetes metricbeat deployment (working on it)

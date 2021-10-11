@@ -16,45 +16,52 @@ My cluster is reachable via the wlan0 Wifi connector and the Kubernetes cluster 
 The build is run with ansible from your desktop/laptop, so ansible needs to be installed. The scripts will first prepare the Raspberry Pi's and then install the Kubernetes cluster. This install will be run from node1, so you won't have to install all kinds of requirements on your laptop. When the cluster is up and running you will install Kubernetes-dashboard, Elastic operator, the 3 node Elasticsearch cluster, one Kibana instance within Kubernetes. Finally file- and metricbeat will be installed on all Raspberry Pi's reporting to the Elasticsearch cluster within Kubernetes.
 
 ## The tasks and scripts
-- First you need to prepare the SD cards for the Pi's. Google for instructrions howto install Ubuntu LTS on the raspberry PI's. 
-- Login to each ubuntu with the user ubuntu and password ubuntu, change the ubuntu password and configure the wlan0 wifi adapter with netplan. Google howto do that or have a peek at the 01-prepare.yml file for inspiration.
-- Write down the IP addresses of all Raspberry Pi's. Use the command ip a.
-- After Wifi becoming alive, let Ubuntu do the unattended upgrades. This takes 15-20 minutes. Just look with top at the last node and wait until it becomes quiet.
-- Edit the hosts.ini and fill in the wifi IPs of the nodes.
+- Flash your SD cards and start up the Raspberry Pi's. 
+  - Here is the official documentation: https://ubuntu.com/tutorials/how-to-install-ubuntu-desktop-on-raspberry-pi-4#1-overview.
+- Login to each ubuntu with user ubuntu and password ubuntu. Now you need to connect the Raspberry Pi's to Wifi.
+  - Here is a nice guide to do this: https://linuxconfig.org/ubuntu-20-04-connect-to-wifi-from-command-line.
+  - You can also have a look at 01-prepare.yml, but this is in Ansible language.
+  - Write down the IP addresses of all Raspberry Pi's and decide who becomes node1, node2, node3 and node4.
+- Let Ubuntu do the unattended upgrades. This takes 15-20 minutes. Just look with top at the last node and wait until it becomes quiet.
+- Be sure you're in the Kubespray-4RPI4 directory.
+  - Edit the hosts.ini and fill in the wifi IPs of the nodes.
+  - Edit wifi.yml for the access to your wifi network.
 - Generate ssh keys with ssh-keygen on your desktop/laptop, when not already done!
 - Setup the ssh keys to all Raspberry Pi's with ssh-copy-id ubuntu@(Wifi IP address node1) up to ssh-copy-id ubuntu@(Wifi IP address node4).
 - sh 01-prepare.sh
-  - Edit wifi.yml for the access to your wifi network.
   - This will apply maintenance, remove snapd and unattended upgrades, install avahi, configure the network and enable cgroups memory.
   - Avahi is enabled, you should be able to login with ssh ubuntu@node1.local.
-- Login into the first Raspberry Pi node1 and do here the ssh keygen with command ssh-keygen. Just go with the defaults.
-- Setup the ssh to all (also node1) Raspberry Pi's with ssh-copy-id 10.0.0.11 up to ssh-copy-id 10.0.0.14.
+- Login into the first Raspberry Pi node1 and do here the ssh-keygen, just go with the defaults.
+- Setup the ssh keys to all (also node1) Raspberry Pi's with ssh-copy-id 10.0.0.11 up to ssh-copy-id 10.0.0.14. Just reply yes and the password.
 - sh 02-install.sh
   - This will prepare node1 and install kubespray, followed up by an install running on node1. This will take 30-45 minutes. Be patient!
-  - You can watch the log by loging into node1, go to the kubespray directory and tail -f the log named _install-YYMMDD-HH:MM.log that's there being created,
+  - On another terminal login into node1, go to the kubespray directory and tail -f the log named _install-YYMMDD-HH:MM.log.
 - sh 03-kubernetes-dashboard.sh
-  - Install the kubernetes dashboard. I use the official instead of the Kubespray one, domehow the official works better for me.
+  - Install the kubernetes dashboard. I use the official instead of the Kubespray one, somehow the official works better for me.
   - Fetch the displayed token at the end of the install and save it. You need it for accessing the dashboard.
 - Check the Kubernetes dashboard on https://node1.local:30001. When Chrome complains on the certificates just type thisisunsafe. 
   - Use the token to login.
   - Select all namespaces to see some action.
-- sh 04-elastic.sh
-  - This will install the elastic operator responsible for implementing Elasticsearch clusters and Kibana's.
-- sh 05-elasticsearch.sh
-  - This will install a 3 node Elasticsearch cluster. 
-  - At the end there will be a file /home/ubuntu/kubespray/_elastic.pwd file on each Raspberry Pi containing the password for the elastic user. Fetch it, you need this for accessing Elasticsearch via Kibana.
-- sh 06-kibana.sh
-  - Install a Kibana instance.
-- Check Kubernetes dashboard if Elasticsearch and Kibana are up and running. After that access Kibana on https://node1.local:30003.
-- sh 07-metricbeat.sh
-  - Install and configure Metricbeat on each Raspberry Pi including loading the index templates and dashboards.
-- sh 08-filebeat.sh
-  - Install and configure Filebeat on each Raspbery Pi including loading the index template and dasboards.
-- sh 09-metrics-server.sh
-  - Install the metrics-server. See the 09-metrics-server.yml what needs to be changed on the original for Raspberry Pi's.
-- Check the incoming data for file- and metricbeat and check the nice metricbeat dashboards within Kibana.
-- sh 10-kube-state-metrics.sh
+- sh 04-metrics-server.sh
+  - Install the metrics-server. I've added and marked 2 changes for Rapsberry Pi.
+- sh 05-kube-state-metrics.sh
   - Install the kube-state-metrics that will provide statistics to kubernetes metricbeat.
+- sh 06-elastic.sh
+  - This will install the elastic operator responsible for implementing Elasticsearch clusters and Kibana's.
+- sh 07-elasticsearch.sh
+  - This will install a single node Elasticsearch cluster.
+  - At the end there will be a file /home/ubuntu/kubespray/_elastic.pwd on each Raspberry Pi containing the elasti password for the elastic user.
+  - Fetch this password, you need it to get into Kibana.
+- sh 08-kibana.sh
+  - Install a Kibana instance.
+- Check Kubernetes dashboard if Elasticsearch and Kibana are up and running. 
+  - After that access Kibana on https://node1.local:30003.
+  - Use the user elastic with the fetched password.
+- sh 09-metricbeat.sh
+  - Install and configure Metricbeat on each Raspberry Pi including loading the index templates and dashboards.
+- sh 10-filebeat.sh
+  - Install and configure Filebeat on each Raspbery Pi including loading the index template and dasboards.
+- Check the incoming data for file- and metricbeat and check the nice metricbeat dashboards within Kibana.
 - sh 11-kubernetes-metricbeat.sh
   - The metricbeat kubernetes daemon set.
 

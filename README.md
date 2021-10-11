@@ -52,6 +52,7 @@ The build is run with ansible from your desktop/laptop, so ansible needs to be i
   - This will install a single node Elasticsearch cluster.
   - At the end there will be a file /home/ubuntu/kubespray/_elastic.pwd on each Raspberry Pi containing the elasti password for the elastic user.
   - Fetch this password, you need it to get into Kibana.
+  - Later on you can enlarge the number of nodes.
 - sh 08-kibana.sh
   - Install a Kibana instance.
 - Check Kubernetes dashboard if Elasticsearch and Kibana are up and running. 

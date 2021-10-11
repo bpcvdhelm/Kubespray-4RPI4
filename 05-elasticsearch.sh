@@ -1,1 +1,0 @@
-ansible-playbook -i hosts.ini 05-elasticsearch.yml -u ubuntu

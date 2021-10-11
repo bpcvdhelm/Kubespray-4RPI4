@@ -1,1 +1,1 @@
-ansible-playbook -i hosts.ini 03-kubernetes-dashboard.yml -u ubuntu
+ansible-playbook 03-kubernetes-dashboard.yml -i hosts.ini -u ubuntu

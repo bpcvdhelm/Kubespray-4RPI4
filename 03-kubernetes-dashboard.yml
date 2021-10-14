@@ -41,14 +41,14 @@
           type: NodePort
         status:
           loadBalancer: {}
-      dest: /home/ubuntu/kubespray/nodeport-kubernetes-dashboard.yml
+      dest: /home/ubuntu/kubespray/_nodeport-kubernetes-dashboard.yml
     register: svc
 #
 # Activate nodeport-kubernetes-dashboard svc
 #
   - name: Activate nodeport kubernetes dashboard svc
     become_user: ubuntu
-    ansible.builtin.shell: kubectl apply -f /home/ubuntu/kubespray/nodeport-kubernetes-dashboard.yml
+    ansible.builtin.shell: kubectl apply -f /home/ubuntu/kubespray/_nodeport-kubernetes-dashboard.yml
     args:
       chdir: /home/ubuntu
     when: svc.changed

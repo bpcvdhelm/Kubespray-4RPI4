@@ -1,89 +1,189 @@
 ---
 
-- hosts: cluster
-  become: yes
-  gather_facts: no
-  tasks:
-  - name: download and install the public signing key
-    ansible.builtin.shell: wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-
-  - name: install apt-transport-https
-    apt:
-      pkg: apt-transport-https
-
-  - name: save the repository definition to /etc/apt/sources.list.d/elastic-7.x.list
-    ansible.builtin.shell: echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-7.x.list
-
-  - name: apt-get update
-    apt:
-      update_cache: yes
-
-  - name: install metricbeat
-    apt:
-      pkg: metricbeat
-
-  - name: enable metribeat module docker
-    ansible.builtin.shell: metricbeat modules enable docker
-
+#
+# Deploy kubernetes metricbeat
+#
 - hosts: node1
   become: yes
   gather_facts: no
   tasks:
-  - name: retrieve the elastic password
-    command: cat /home/ubuntu/kubespray/_elastic.pwd
-    register: password
-
-  - name: load index template
-    ansible.builtin.shell: metricbeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["https://10.0.0.11:30002"]' -E 'output.elasticsearch.ssl.verification_mode="none"' -E 'output.elasticsearch.username="elastic"' -E 'output.elasticsearch.password="{{ password.stdout }}"'
-
-  - name: setup dashboards
-    ansible.builtin.shell: metricbeat setup --dashboards -E output.logstash.enabled=false -E 'setup.kibana.host="https://10.0.0.11:30003"' -E 'setup.kibana.user="elastic"' -E 'setup.kibana.ssl.verification_mode="none"' -E 'setup.kibana.username="elastic"' -E 'setup.kibana.password="{{ password.stdout }}"'
-
-- hosts: cluster
-  become: yes
-  gather_facts: no
-  tasks:
-  - name: stat /etc/metricbeat/metricbeat.yml.org
-    stat:
-      path: /etc/metricbeat/metricbeat.yml.org
-    register: stat
-
-  - name: save the original metricbeat.yml
-    ansible.builtin.shell: mv /etc/metricbeat/metricbeat.yml /etc/metricbeat/metricbeat.yml.org
-    when: not stat.stat.exists
-
-  - name: retrieve the elastic password
-    command: cat /home/ubuntu/kubespray/_elastic.pwd
-    register: password
-
-  - name: create metricbeat.yml
+  - name: create _kubernetes-metricbeat.yml
+    become_user: ubuntu
     ansible.builtin.copy:
       content: |
-        metricbeat.config.modules:
-          path: ${path.config}/modules.d/*.yml
-          reload.enabled: false
-        setup.template.settings:
-        index.number_of_shards: 1
-        index.codec: best_compression
-        output.elasticsearch:
-          hosts: ["10.0.0.11:30002","10.0.0.12:30002", "10.0.0.13:30002", "10.0.0.14:30002"]
-          ssl.verification_mode: "none"
-          protocol: "https"
-          username: "elastic"
-          password: "{{ password.stdout }}"
-        processors:
-          - add_host_metadata: ~
-          - add_cloud_metadata: ~
-          - add_docker_metadata: ~
-          - add_kubernetes_metadata: ~
-      dest: /etc/metricbeat/metricbeat.yml
-
-  - name: enable metricbeat
-    ansible.builtin.service:
-      name: metricbeat
-      enabled: yes
-
-  - name: start metricbeat
-    ansible.builtin.service:
-      name: metricbeat.service
-      state: restarted
+        apiVersion: beat.k8s.elastic.co/v1beta1
+        kind: Beat
+        metadata:
+          name: metricbeat
+        spec:
+          type: metricbeat
+          version: 7.15.0
+          elasticsearchRef:
+            name: quickstart
+          kibanaRef:
+            name: quickstart
+          config:
+            metricbeat:
+              autodiscover:
+                providers:
+                - hints:
+                    default_config: {}
+                    enabled: "true"
+                  host: ${NODE_NAME}
+                  type: kubernetes
+              modules:
+              - module: system
+                period: 10s
+                metricsets:
+                - cpu
+                - load
+                - memory
+                - network
+                - process
+                - process_summary
+                process:
+                  include_top_n:
+                    by_cpu: 5
+                    by_memory: 5
+                processes:
+                - .*
+              - module: system
+                period: 1m
+                metricsets:
+                - filesystem
+                - fsstat
+                processors:
+                - drop_event:
+                    when:
+                      regexp:
+                        system:
+                          filesystem:
+                            mount_point: ^/(sys|cgroup|proc|dev|etc|host|lib)($|/)
+              - module: kubernetes
+                period: 10s
+                host: ${NODE_NAME}
+                hosts:
+                - https://${NODE_NAME}:10250
+                bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+                ssl:
+                  verification_mode: none
+                metricsets:
+                - node
+                - system
+                - pod
+                - container
+                - volume
+            processors:
+            - add_cloud_metadata: {}
+            - add_host_metadata: {}
+          daemonSet:
+            podTemplate:
+              spec:
+                serviceAccountName: metricbeat
+                automountServiceAccountToken: true # some older Beat versions are depending on this settings presence in k8s context
+                containers:
+                - args:
+                  - -e
+                  - -c
+                  - /etc/beat.yml
+                  - -system.hostfs=/hostfs
+                  name: metricbeat
+                  volumeMounts:
+                  - mountPath: /hostfs/sys/fs/cgroup
+                    name: cgroup
+                  - mountPath: /var/run/docker.sock
+                    name: dockersock
+                  - mountPath: /hostfs/proc
+                    name: proc
+                  env:
+                  - name: NODE_NAME
+                    valueFrom:
+                      fieldRef:
+                        fieldPath: spec.nodeName
+                dnsPolicy: ClusterFirstWithHostNet
+                hostNetwork: true # Allows to provide richer host metadata
+                securityContext:
+                  runAsUser: 0
+                terminationGracePeriodSeconds: 30
+                volumes:
+                - hostPath:
+                    path: /sys/fs/cgroup
+                  name: cgroup
+                - hostPath:
+                    path: /var/run/docker.sock
+                  name: dockersock
+                - hostPath:
+                    path: /proc
+                  name: proc
+        ---
+        # permissions needed for metricbeat
+        # source: https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-module-kubernetes.html
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          name: metricbeat
+        rules:
+        - apiGroups:
+          - ""
+          resources:
+          - nodes
+          - namespaces
+          - events
+          - pods
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - "extensions"
+          resources:
+          - replicasets
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - statefulsets
+          - deployments
+          - replicasets
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - nodes/stats
+          verbs:
+          - get
+        - nonResourceURLs:
+          - /metrics
+          verbs:
+          - get
+        ---
+        apiVersion: v1
+        kind: ServiceAccount
+        metadata:
+          name: metricbeat
+          namespace: default
+        ---
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        metadata:
+          name: metricbeat
+        subjects:
+        - kind: ServiceAccount
+          name: metricbeat
+          namespace: default
+        roleRef:
+          kind: ClusterRole
+          name: metricbeat
+          apiGroup: rbac.authorization.k8s.io
+      dest: /home/ubuntu/kubespray/_kubernetes-metricbeat.yml
+    register: createyml
+  
+  - name: install kubernetes-metricbeat
+    command: kubectl apply -f /home/ubuntu/kubespray/_kubernetes-metricbeat.yml
+    when: createyml.changed

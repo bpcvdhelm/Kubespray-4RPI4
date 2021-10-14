@@ -21,10 +21,12 @@
           elasticsearchRef:
             name: quickstart
       dest: /home/ubuntu/kubespray/_kibana.yml
+    register: createyml
 
   - name: Deploy kibana
     become_user: ubuntu
     ansible.builtin.shell: kubectl apply -f kubespray/_kibana.yml
+    when: createyml.changed
 #
 # Create NodePort quickstart-kb-http svc
 #
@@ -55,11 +57,11 @@
           type: NodePort
         status:
           loadBalancer: {}
-      dest: /home/ubuntu/kubespray/nodeport-quickstart-kb-http.yml
+      dest: /home/ubuntu/kubespray/_nodeport-quickstart-kb-http.yml
     register: svc
 #
 # Activate nodeport-quickstart-kb-http dashboard svc
 #
   - name: Activate nodeport-quickstart-kb-http dashboard svc
-    command: kubectl apply -f /home/ubuntu/kubespray/nodeport-quickstart-kb-http.yml
+    command: kubectl apply -f /home/ubuntu/kubespray/_nodeport-quickstart-kb-http.yml
     when: svc.changed

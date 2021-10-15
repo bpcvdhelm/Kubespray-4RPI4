@@ -1,8 +1,8 @@
 # Kubespray-4RPI4
 
 ## Summary
-When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's. Within that Kubernetes cluster a 3 node Elasticsearch cluster plus one Kibana and will be deployed. All Raspberry Pi's will contain Filebeat and Metricbeat reporting to the Elasticsearch cluster within Kubernetes. On top there will be a metricbeat running in the cluster reporting all cluster performances.
-The Kubernetes dashboard will be accessable via port 30001 on each Raspberry Pi. Elasticsearch will be reachable on port 30002 and Kibana on 30003. So you don't have to fiddle with kubectl proxy or port-forward.
+When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's. Within that Kubernetes cluster ECK will be deployed. ECK will hold a 3 node Elasticsearch cluster plus Kibana, File- and Metricbeat. So within Kibana you can see all performance of Kubernetes itself and the underlaying Raspberry Pi's.
+The Kubernetes dashboard will be accessable via https://node1.local:30001. You can fetch the token with command token.sh. Elasticsearch will be reachable via https://node1:30002 and Kibana can be reached via https://node1.local:30003. Use the user elastic to authenticate to Elastic. Use elasticpwd.sh to fetch the password. You don't have to fiddle with kubectl proxy or port-forward.
 
 ## Hardware
 I've purchased 4 Raspberry Pi4 machines with 8Gb memory plus a TP-LINK LS1005G including cables. When I look at the Metricbeat dashboards, also the 4Gb memory Raspberry Pi's should work. Power is coming from "old" Rapsberry Pi3 power supplies, so I also purchased USB Micro-B to USB-C adapters.

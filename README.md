@@ -28,6 +28,8 @@ The build is run with ansible from your desktop/laptop, so ansible needs to be i
   - Edit wifi.yml for the access to your wifi network.
 - Generate ssh keys with ssh-keygen on your desktop/laptop, when not already done!
 - Setup the ssh keys to all Raspberry Pi's with ssh-copy-id ubuntu@(Wifi IP address node1) up to ssh-copy-id ubuntu@(Wifi IP address node4).
+
+## Install Kubernetes
 - sh 01-prepare.sh
   - This will apply maintenance, remove snapd and unattended upgrades, install avahi, configure the network and enable cgroups memory.
   - Avahi is enabled, you should be able to login with ssh ubuntu@node1.local.
@@ -46,6 +48,8 @@ The build is run with ansible from your desktop/laptop, so ansible needs to be i
   - Install the metrics-server. I've added and marked 2 changes for Rapsberry Pi.
 - sh 05-kube-state-metrics.sh
   - Install the kube-state-metrics that will provide statistics to kubernetes metricbeat.
+
+## Install ECK, Elasticsearch, Kibana, File- and Metricbeat, all on Kubernetes
 - sh 06-elastic.sh
   - This will install the elastic operator responsible for implementing Elasticsearch clusters and Kibana's.
 - sh 07-elasticsearch.sh
@@ -63,10 +67,6 @@ The build is run with ansible from your desktop/laptop, so ansible needs to be i
 - sh 10-filebeat.sh
   - Install and configure Filebeat on each Raspbery Pi including loading the index template and dasboards.
 - Check the incoming data for file- and metricbeat and check the nice metricbeat dashboards within Kibana.
-- sh 11-kubernetes-metricbeat.sh
-  - The metricbeat kubernetes daemon set.
-
-<img src="https://github.com/bpcvdhelm/Kubespray-4RPI4/blob/main/Metricbeat.png" width="1000">
 
 ## Enable kubectl command for your desktop/laptop
 Execute the commands:
@@ -77,3 +77,5 @@ Execute the commands:
 
 ## Todo
 - Implement ssh key gen and copy wihtin ansible
+
+Wow, you made it all to the bottom! If there is any remark or request, just reach out to me!

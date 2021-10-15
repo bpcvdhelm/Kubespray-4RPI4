@@ -45,7 +45,7 @@ The build is run with ansible from your desktop/laptop, so ansible needs to be i
   - Use the token to login.
   - Select all namespaces to see some action.
 - sh 04-metrics-server.sh
-  - Install the metrics-server. I've added and marked 2 changes for Rapsberry Pi.
+  - Install the metrics-server. I've added and marked 2 changes in the components.yml for Rapsberry Pi.
 - sh 05-kube-state-metrics.sh
   - Install the kube-state-metrics that will provide statistics to kubernetes metricbeat.
 

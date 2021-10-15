@@ -1,8 +1,8 @@
 # Kubespray-4RPI4
 
 ## Summary
-When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's. Within that Kubernetes cluster a 3 node Elasticsearch cluster plus one Kibana and will be deployed. All Raspberry Pi's will contain Filebeat and Metricbeat reporting to the Elasticsearch cluster within Kubernetes. On top there will be a metricbeat running in the cluster reporting all cluster performances.
-The Kubernetes dashboard will be accessable via port 30001 on each Raspberry Pi. Elasticsearch will be reachable on port 30002 and Kibana on 30003. So you don't have to fiddle with kubectl proxy or port-forward.
+When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's. Within that Kubernetes cluster ECK will be deployed. ECK will hold a 3 node Elasticsearch cluster plus Kibana, File- and Metricbeat. So within Kibana you can see all performance of Kubernetes itself and the underlaying Raspberry Pi's.
+The Kubernetes dashboard will be accessable via https://node1.local:30001. You can fetch the token with command token.sh. Elasticsearch will be reachable via https://node1:30002 and Kibana can be reached via https://node1.local:30003. Use the user elastic to authenticate to Elastic. You can fetch the password with command elasticpwd.sh. You won't have to fiddle with kubectl proxy or port-forward.
 
 ## Hardware
 I've purchased 4 Raspberry Pi4 machines with 8Gb memory plus a TP-LINK LS1005G including cables. When I look at the Metricbeat dashboards, also the 4Gb memory Raspberry Pi's should work. Power is coming from "old" Rapsberry Pi3 power supplies, so I also purchased USB Micro-B to USB-C adapters.
@@ -15,7 +15,7 @@ My cluster is reachable via the wlan0 Wifi connector and the Kubernetes cluster 
 ## Build
 The build is run with ansible from your desktop/laptop, so ansible needs to be installed. The scripts will first prepare the Raspberry Pi's and then install the Kubernetes cluster. This install will be run from node1, so you won't have to install all kinds of requirements on your laptop. When the cluster is up and running you will install Kubernetes-dashboard, Elastic operator, the 3 node Elasticsearch cluster, one Kibana instance within Kubernetes. Finally file- and metricbeat will be installed on all Raspberry Pi's reporting to the Elasticsearch cluster within Kubernetes.
 
-## The tasks and scripts
+## Prepare the Raspberry Pi's
 - Flash your SD cards and start up the Raspberry Pi's. 
   - Here is the official documentation: https://ubuntu.com/tutorials/how-to-install-ubuntu-desktop-on-raspberry-pi-4#1-overview.
 - Login to each ubuntu with user ubuntu and password ubuntu. Now you need to connect the Raspberry Pi's to Wifi.
@@ -30,6 +30,7 @@ The build is run with ansible from your desktop/laptop, so ansible needs to be i
 - Setup the ssh keys to all Raspberry Pi's with ssh-copy-id ubuntu@(Wifi IP address node1) up to ssh-copy-id ubuntu@(Wifi IP address node4).
 
 ## Install Kubernetes
+Be sure you have the latest ansible version installed!
 - sh 01-prepare.sh
   - This will apply maintenance, remove snapd and unattended upgrades, install avahi, configure the network and enable cgroups memory.
   - Avahi is enabled, you should be able to login with ssh ubuntu@node1.local.
@@ -74,6 +75,16 @@ Execute the commands:
 - scp ubuntu@node1.local:/home/ubuntu/.kube/config ~/.kube/config
 - edit the ~/.kube/config file and change 127.0.0.1 to the Wifi IP address of node1.
 - test with the command kubectl get nodes -owide
+
+## Handy commands
+- elasticpwd.sh
+  - Print the elastic password, you'll need it to login to Kibana with the elastic user.
+- restart.sh
+  - Restart the Pi's.
+- shutdown.sh
+    - Shutdown the Pi's. You'll still need to unplug them after that ;-).
+- token.sh
+  - Print the kubernetes-dashboard token. You'll need this to watch the dashboard.
 
 ## Todo
 - Implement ssh key gen and copy wihtin ansible

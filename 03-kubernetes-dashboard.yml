@@ -68,26 +68,3 @@
     args:
       chdir: /home/ubuntu
     ignore_errors: true
-# 
-# Get the token
-#
-  - name: Get secrets and fetch name of admin
-    become_user: ubuntu
-    ansible.builtin.shell: kubectl get secrets | grep dashboard-admin-sa-token | cut -d " " -f1
-    args:
-      chdir: /home/ubuntu
-    register: output
-
-  - set_fact:
-      secret_name: "{{ output.stdout_lines[0] }}"
-
-  - name: Describe secret {{ secret_name }}
-    become_user: ubuntu
-    ansible.builtin.shell: kubectl describe secret {{ secret_name }}
-    args:
-      chdir: /home/ubuntu
-    register: output
-
-  - name: Use this token to login kubernetes-dashboard
-    debug:
-      var: output.stdout_lines

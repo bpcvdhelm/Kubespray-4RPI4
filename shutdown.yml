@@ -5,4 +5,4 @@
   gather_facts: no
   tasks:
   - name: Shutdown
-    command: shutdown -h now
+    community.general.shutdown:

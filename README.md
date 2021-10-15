@@ -76,6 +76,16 @@ Execute the commands:
 - edit the ~/.kube/config file and change 127.0.0.1 to the Wifi IP address of node1.
 - test with the command kubectl get nodes -owide
 
+## Handy commands
+- elasticpwd.sh
+  - Print the elastic password, you'll need it to login to Kibana with the elastic user.
+- restart.sh
+  - Restart the Pi's.
+- shutdown.sh
+    - Shutdown the Pi's. You'll still need to unplug them after that ;-).
+- token.sh
+  - Print the kubernetes-dashboard token. You'll need this to watch the dashboard.
+
 ## Todo
 - Implement ssh key gen and copy wihtin ansible
 

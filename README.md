@@ -30,6 +30,7 @@ The build is run with ansible from your desktop/laptop, so ansible needs to be i
 - Setup the ssh keys to all Raspberry Pi's with ssh-copy-id ubuntu@(Wifi IP address node1) up to ssh-copy-id ubuntu@(Wifi IP address node4).
 
 ## Install Kubernetes
+Be sure you have the latest ansible version installed!
 - sh 01-prepare.sh
   - This will apply maintenance, remove snapd and unattended upgrades, install avahi, configure the network and enable cgroups memory.
   - Avahi is enabled, you should be able to login with ssh ubuntu@node1.local.

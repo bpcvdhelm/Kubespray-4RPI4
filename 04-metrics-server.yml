@@ -9,7 +9,7 @@
     ansible.builtin.copy:
       content: |
         # wget https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml
-        # See '# <<-- added' what was changed
+        # See '# <<-- added' what was changed explicitly for Raspberry Pi
         apiVersion: v1
         kind: ServiceAccount
         metadata:

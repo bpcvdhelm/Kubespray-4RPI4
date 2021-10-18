@@ -1,7 +1,7 @@
 # Kubespray-4RPI4
 
 ## Summary
-When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's. Within that Kubernetes cluster ECK will be deployed. ECK will hold a 3 node Elasticsearch cluster plus Kibana, File- and Metricbeat. So within Kibana you can see all performance of Kubernetes itself and the underlaying Raspberry Pi's.
+When you follow the instructions you will end up with a 4 node Kubernetes cluster running on 4 Raspberry Pi's including a working metrics-server and kube-state-metrics. Within that Kubernetes cluster ECK will be deployed. ECK will hold a 3 node Elasticsearch cluster plus Kibana, File- and Metricbeat. So within Kibana you can see all performance of Kubernetes itself and the underlaying Raspberry Pi's.
 The Kubernetes dashboard will be accessable via https://node1.local:30001. You can fetch the token with command token.sh. Elasticsearch will be reachable via https://node1:30002 and Kibana can be reached via https://node1.local:30003. Use the user elastic to authenticate to Elastic. You can fetch the password with command elasticpwd.sh. You won't have to fiddle with kubectl proxy or port-forward.
 
 ## Hardware
